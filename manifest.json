@@ -1,13 +1,13 @@
 {
-    "name": "无SW的PWA",
-    "short_name": "PWA Lite",
-    "start_url": "/pwatest/auv",  // 修改为实际路径
+    "name": "小三月的秘密基地",
+    "short_name": "March7th",
+    "start_url": "/auv",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#4285f4",
+    "theme_color": "#ffffff",
     "icons": [{
-        "src": "/pwatest/icon.png",  // 修改为完整路径
-        "sizes": "192x192",
+        "src": "/icon.png",
+        "sizes": "512x512",
         "type": "image/png"
     }]
 }
