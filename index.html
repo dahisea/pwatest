@@ -67,71 +67,65 @@
         </div>
         <button id="toggleDetails" class="btn">隐藏技术详情</button>
     </div>
-
     <script>
-        function checkPWASupport() {
-            const statusBox = document.getElementById('statusBox');
-            const installBtn = document.getElementById('installBtn');
-            const details = document.getElementById('details');
-            const techDetails = document.getElementById('techDetails');
-            const toggleBtn = document.getElementById('toggleDetails');
+    let deferredPrompt;
 
-            let supportStatus = {
-                manifest: !!document.querySelector('link[rel="manifest"]'),
-                serviceWorker: 'serviceWorker' in navigator,
-                beforeInstallPrompt: false,
-                isSecure: window.location.protocol === 'https:' || window.location.hostname === 'localhost',
-                displayMode: window.matchMedia('(display-mode: standalone)').matches,
-                userAgent: navigator.userAgent
-            };
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // 不立即调用 prompt，让浏览器可以显示地址栏提示
+        deferredPrompt = e;
 
-            let deferredPrompt = null;
+        // 可选：显示安装按钮
+        document.getElementById('installBtn').classList.remove('hidden');
+    });
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                supportStatus.beforeInstallPrompt = true;
-                updateStatus();
-            });
-
-            installBtn.addEventListener('click', () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then(() => {
-                        deferredPrompt = null;
-                    });
-                } else {
-                    alert("您的浏览器暂不支持立即安装，但已注册 Service Worker。");
-                }
-            });
-
-            function updateStatus() {
-                const isSupported = supportStatus.manifest && supportStatus.isSecure;
-                statusBox.textContent = isSupported ?
-                    '✅ 您的浏览器支持PWA特性' :
-                    '⚠️ 您的浏览器支持有限';
-                statusBox.className = `status ${isSupported ? 'supported' : 'unsupported'}`;
-                statusBox.classList.remove('hidden');
-                techDetails.textContent = JSON.stringify(supportStatus, null, 2);
+    document.getElementById('installBtn').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+            if (result.outcome === 'accepted') {
+                console.log('✅ 用户接受安装');
+            } else {
+                console.log('❌ 用户取消安装');
             }
-
-            updateStatus();
-
-            let detailsVisible = true;
-            toggleBtn.addEventListener('click', () => {
-                detailsVisible = !detailsVisible;
-                details.style.display = detailsVisible ? 'block' : 'none';
-                toggleBtn.textContent = detailsVisible ? '隐藏技术详情' : '显示技术详情';
-            });
-
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js')
-                    .then(() => console.log('Service Worker 已注册'))
-                    .catch(err => console.warn('Service Worker 注册失败:', err));
-            }
+            document.getElementById('installBtn').classList.add('hidden');
+            deferredPrompt = null;
         }
+    });
 
-        window.addEventListener('load', checkPWASupport);
-    </script>
+    // 注册 service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('✅ Service Worker 注册成功'))
+                .catch((err) => console.warn('❌ Service Worker 注册失败:', err));
+        });
+    }
+
+    // 页面加载后检查状态
+    window.addEventListener('load', () => {
+        const techDetails = document.getElementById('techDetails');
+        const toggleBtn = document.getElementById('toggleDetails');
+        const details = document.getElementById('details');
+
+        const supportStatus = {
+            manifest: !!document.querySelector('link[rel="manifest"]'),
+            serviceWorker: 'serviceWorker' in navigator,
+            isSecure: location.protocol === 'https:' || location.hostname === 'localhost',
+            displayMode: window.matchMedia('(display-mode: standalone)').matches,
+            userAgent: navigator.userAgent
+        };
+
+        techDetails.textContent = JSON.stringify(supportStatus, null, 2);
+
+        // 切换技术详情显示
+        let visible = true;
+        toggleBtn.addEventListener('click', () => {
+            visible = !visible;
+            details.style.display = visible ? 'block' : 'none';
+            toggleBtn.textContent = visible ? '隐藏技术详情' : '显示技术详情';
+        });
+    });
+</script>
+
 </body>
 </html>
