@@ -1,7 +1,7 @@
 {
     "name": "小三月的秘密基地",
     "short_name": "March7th",
-    "start_url": "/auv",
+    "start_url": "https://www.march7th.asia/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
