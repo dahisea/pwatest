@@ -1,14 +1,20 @@
-// sw.js - 简易Service Worker
-self.addEventListener('install', event => {
-    console.log('Service Worker: 安装完成');
-    self.skipWaiting(); // 立即激活
+// sw.js: 简单缓存首页和 manifest 来激活 PWA 状态
+self.addEventListener('install', (event) => {
+  console.log('[SW] 已安装');
+  event.waitUntil(
+    caches.open('pwa-cache-v1').then((cache) => {
+      return cache.addAll([
+        '/',
+        '/manifest.json',
+      ]);
+    })
+  );
 });
 
-self.addEventListener('activate', event => {
-    console.log('Service Worker: 已激活');
-});
-
-self.addEventListener('fetch', event => {
-    // 不拦截请求，只记录
-    console.log('Service Worker 监听 fetch：', event.request.url);
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request);
+    })
+  );
 });
