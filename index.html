@@ -1,23 +1,68 @@
 <!DOCTYPE html>
-   <html>
-   <head>
-       <title>PWA测试</title>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-       <link rel="manifest" href="/pwatest/manifest.json">
-       <meta name="theme-color" content="#4285f4"/>
-       <!-- 确保图标存在 -->
-       <link rel="icon" href="/pwatest/icon.png">
-   </head>
-   <body>
-       <script>
-       // 触发安装提示的代码
-       window.addEventListener('beforeinstallprompt', (e) => {
-           e.preventDefault();
-           console.log("可以安装PWA了！");
-           document.body.innerHTML += "<button id='installBtn'>安装应用</button>";
-           document.getElementById('installBtn').onclick = () => e.prompt();
-       });
-       </script>
-   </body>
-   </html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轻量PWA</title>
+    <meta name="theme-color" content="#4A90E2">
+    <link rel="manifest" href="./manifest.json">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #4A90E2;
+            font-weight: 500;
+        }
+        #installBtn {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #installBtn:hover {
+            background: #3a7bc8;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>极简 PWA 示例</h1>
+        <p>轻量级渐进式网页应用，点击下方按钮安装</p>
+        <button id="installBtn">安装应用</button>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'inline-block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', () => {
+            if(deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    deferredPrompt = null;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
