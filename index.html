@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>无SW的PWA示例</title>
-    <!-- 必须的manifest -->
-    <link rel="manifest" href="/pwatest/manifest.json">
-    <!-- 主题色 -->
-    <meta name="theme-color" content="#4285f4"/>
-</head>
-<body>
-    <h1>这是一个没有Service Worker的PWA</h1>
-    <p>它可以被安装到主屏幕，但没有离线功能。</p>
-</body>
-</html>
+   <html>
+   <head>
+       <title>PWA测试</title>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+       <link rel="manifest" href="/pwatest/manifest.json">
+       <meta name="theme-color" content="#4285f4"/>
+       <!-- 确保图标存在 -->
+       <link rel="icon" href="/pwatest/icon.png">
+   </head>
+   <body>
+       <script>
+       // 触发安装提示的代码
+       window.addEventListener('beforeinstallprompt', (e) => {
+           e.preventDefault();
+           console.log("可以安装PWA了！");
+           document.body.innerHTML += "<button id='installBtn'>安装应用</button>";
+           document.getElementById('installBtn').onclick = () => e.prompt();
+       });
+       </script>
+   </body>
+   </html>
