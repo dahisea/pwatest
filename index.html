@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PWA支持检测</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PWA 支持检测</title>
   <meta name="theme-color" content="#ffffff" />
   <link rel="manifest" href="./manifest.json" />
   <style>
@@ -13,7 +13,6 @@
       margin: 0 auto;
       padding: 20px;
       color: #333;
-      line-height: 1.6;
       text-align: center;
     }
     .btn {
@@ -26,27 +25,27 @@
       margin: 20px 0;
       cursor: pointer;
       transition: background 0.3s;
-      display: inline-block;
     }
     .btn:hover { background: #3a7bc8; }
     .status {
       padding: 15px;
       border-radius: 4px;
       margin: 20px 0;
+      font-weight: bold;
     }
     .supported { background: #e8f5e9; color: #2e7d32; }
     .unsupported { background: #ffebee; color: #c62828; }
     #details {
+      display: none;
       margin: 20px 0;
       padding: 15px;
       background: #f5f5f5;
       border-radius: 4px;
       text-align: left;
-      display: none;
     }
     pre {
       white-space: pre-wrap;
-      word-wrap: break-word;
+      word-break: break-word;
       background: #fff;
       padding: 10px;
       border-radius: 4px;
@@ -55,9 +54,11 @@
   </style>
 </head>
 <body>
-  <h1>PWA支持检测</h1>
-  <div id="statusBox" class="status" hidden></div>
+  <h1>PWA 支持检测</h1>
+
+  <div id="statusBox" class="status"></div>
   <button id="installBtn" class="btn" hidden>安装应用</button>
+
   <div id="details">
     <h3>技术详情</h3>
     <pre id="techDetails">检测中...</pre>
@@ -65,15 +66,23 @@
   <button id="toggleDetails" class="btn">显示技术详情</button>
 
   <script>
-    let deferredPrompt;
+    let deferredPrompt = null;
     const installBtn = document.getElementById('installBtn');
+    const statusBox = document.getElementById('statusBox');
     const techDetails = document.getElementById('techDetails');
     const toggleBtn = document.getElementById('toggleDetails');
-    const details = document.getElementById('details');
+    const detailsBox = document.getElementById('details');
+
+    const isStandalone = () => (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true // for iOS Safari
+    );
 
     window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
       deferredPrompt = e;
       installBtn.hidden = false;
+      console.log('✅ 捕获 beforeinstallprompt 事件');
     });
 
     installBtn.addEventListener('click', async () => {
@@ -86,29 +95,44 @@
       }
     });
 
+    // 注册 Service Worker
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('✅ Service Worker 注册成功'))
-          .catch(err => console.warn('❌ Service Worker 注册失败:', err));
-      });
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker 注册成功'))
+        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
     }
 
+    // 页面加载后检查支持情况
     window.addEventListener('load', () => {
-      const status = {
+      const support = {
         manifest: !!document.querySelector('link[rel="manifest"]'),
         serviceWorker: 'serviceWorker' in navigator,
-        isSecure: location.protocol === 'https:' || location.hostname === 'localhost',
-        displayMode: window.matchMedia('(display-mode: standalone)').matches,
+        beforeInstallPrompt: 'onbeforeinstallprompt' in window,
+        isSecureContext: window.isSecureContext,
+        standalone: isStandalone(),
         userAgent: navigator.userAgent
       };
-      techDetails.textContent = JSON.stringify(status, null, 2);
+
+      techDetails.textContent = JSON.stringify(support, null, 2);
+
+      const allSupported = support.manifest && support.serviceWorker && support.isSecureContext;
+
+      statusBox.className = 'status ' + (allSupported ? 'supported' : 'unsupported');
+      statusBox.textContent = allSupported
+        ? (support.standalone ? '✅ 已安装为独立应用' : '✅ 支持 PWA，可安装')
+        : '❌ 当前环境不支持完整的 PWA 功能';
+
+      // 自动隐藏安装按钮（已安装或不支持）
+      if (support.standalone || !support.beforeInstallPrompt) {
+        installBtn.hidden = true;
+      }
     });
 
+    // 显示/隐藏技术详情
     let visible = false;
     toggleBtn.addEventListener('click', () => {
       visible = !visible;
-      details.style.display = visible ? 'block' : 'none';
+      detailsBox.style.display = visible ? 'block' : 'none';
       toggleBtn.textContent = visible ? '隐藏技术详情' : '显示技术详情';
     });
   </script>
