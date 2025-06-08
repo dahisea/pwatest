@@ -1,7 +1,7 @@
 {
     "name": "无SW的PWA",
     "short_name": "PWA Lite",
-    "start_url": "/pwatest/",  // 修改为实际路径
+    "start_url": "/pwatest/auv",  // 修改为实际路径
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#4285f4",
