@@ -1,12 +1,12 @@
 {
     "name": "无SW的PWA",
     "short_name": "PWA Lite",
-    "start_url": "/",
+    "start_url": "/pwatest/",  // 修改为实际路径
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#4285f4",
     "icons": [{
-        "src": "icon.png",
+        "src": "/pwatest/icon.png",  // 修改为完整路径
         "sizes": "192x192",
         "type": "image/png"
     }]
