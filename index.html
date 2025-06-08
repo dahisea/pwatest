@@ -3,129 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能PWA检测</title>
+    <title>PWA安装检测</title>
     <meta name="theme-color" content="#4A90E2">
     <link rel="manifest" href="./manifest.json">
     <style>
+        :root {
+            --primary-color: #4A90E2;
+            --success-color: #2e7d32;
+            --error-color: #c62828;
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+        
         body {
-            font-family: -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            color: #333;
+            color: var(--text-color);
             line-height: 1.6;
             text-align: center;
+            background-color: var(--white);
         }
+        
         .btn {
-            background: #4A90E2;
-            color: white;
+            background: var(--primary-color);
+            color: var(--white);
             border: none;
             padding: 12px 24px;
             border-radius: 4px;
             font-size: 16px;
             margin: 20px 0;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: inline-block;
+            min-width: 160px;
         }
-        .btn:hover { background: #3a7bc8; }
+        
+        .btn:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn.hidden {
+            display: none;
+        }
+        
         .status {
             padding: 15px;
             border-radius: 4px;
             margin: 20px 0;
+            font-weight: 500;
         }
-        .supported { background: #e8f5e9; color: #2e7d32; }
-        .unsupported { background: #ffebee; color: #c62828; }
+        
+        .supported {
+            background: rgba(46, 125, 50, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(46, 125, 50, 0.3);
+        }
+        
+        .unsupported {
+            background: rgba(198, 40, 40, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(198, 40, 40, 0.3);
+        }
+        
         #details {
             margin: 20px 0;
             padding: 15px;
-            background: #f5f5f5;
+            background: var(--bg-color);
             border-radius: 4px;
             text-align: left;
+            transition: all 0.3s ease;
         }
+        
         pre {
             white-space: pre-wrap;
             word-wrap: break-word;
-            background: #fff;
+            background: var(--white);
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #ddd;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .browser-hint {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>PWA支持检测</h1>
-
+        <h1>PWA安装检测</h1>
+        
         <div id="statusBox" class="status hidden"></div>
-
-        <button id="installBtn" class="btn">安装应用</button>
-
+        
+        <button id="installBtn" class="btn hidden">安装应用</button>
+        
         <div id="details">
             <h3>技术详情</h3>
-            <pre id="techDetails">检测中...</pre>
+            <pre id="techDetails">正在检测浏览器支持情况...</pre>
         </div>
+        
         <button id="toggleDetails" class="btn">隐藏技术详情</button>
+        
+        <div class="browser-hint">
+            <p>提示：如果安装按钮未显示，请检查浏览器地址栏或菜单中的安装选项</p>
+        </div>
     </div>
+
     <script>
-    let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // 不立即调用 prompt，让浏览器可以显示地址栏提示
-        deferredPrompt = e;
-
-        // 可选：显示安装按钮
-        document.getElementById('installBtn').classList.remove('hidden');
-    });
-
-    document.getElementById('installBtn').addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const result = await deferredPrompt.userChoice;
-            if (result.outcome === 'accepted') {
-                console.log('✅ 用户接受安装');
-            } else {
-                console.log('❌ 用户取消安装');
-            }
-            document.getElementById('installBtn').classList.add('hidden');
-            deferredPrompt = null;
-        }
-    });
-
-    // 注册 service worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(() => console.log('✅ Service Worker 注册成功'))
-                .catch((err) => console.warn('❌ Service Worker 注册失败:', err));
-        });
-    }
-
-    // 页面加载后检查状态
-    window.addEventListener('load', () => {
+        // 全局变量
+        let deferredPrompt;
+        let isDetailsVisible = true;
+        
+        // DOM元素
+        const statusBox = document.getElementById('statusBox');
+        const installBtn = document.getElementById('installBtn');
         const techDetails = document.getElementById('techDetails');
         const toggleBtn = document.getElementById('toggleDetails');
         const details = document.getElementById('details');
-
-        const supportStatus = {
-            manifest: !!document.querySelector('link[rel="manifest"]'),
-            serviceWorker: 'serviceWorker' in navigator,
-            isSecure: location.protocol === 'https:' || location.hostname === 'localhost',
-            displayMode: window.matchMedia('(display-mode: standalone)').matches,
-            userAgent: navigator.userAgent
-        };
-
-        techDetails.textContent = JSON.stringify(supportStatus, null, 2);
-
-        // 切换技术详情显示
-        let visible = true;
-        toggleBtn.addEventListener('click', () => {
-            visible = !visible;
-            details.style.display = visible ? 'block' : 'none';
-            toggleBtn.textContent = visible ? '隐藏技术详情' : '显示技术详情';
-        });
-    });
-</script>
-
+        
+        // 初始化函数
+        function init() {
+            setupEventListeners();
+            checkPWASupport();
+            registerServiceWorker();
+        }
+        
+        // 设置事件监听
+        function setupEventListeners() {
+            // 安装按钮点击事件
+            installBtn.addEventListener('click', handleInstallClick);
+            
+            // 切换详情显示
+            toggleBtn.addEventListener('click', toggleDetailsVisibility);
+            
+            // PWA安装提示事件
+            window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            
+            // PWA已安装事件
+            window.addEventListener('appinstalled', handleAppInstalled);
+        }
+        
+        // 处理安装按钮点击
+        async function handleInstallClick() {
+            if (!deferredPrompt) return;
+            
+            try {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    updateStatus('✅ 用户已接受安装', 'supported');
+                    console.log('用户接受了PWA安装提示');
+                } else {
+                    updateStatus('⚠️ 用户取消了安装', 'unsupported');
+                    console.log('用户拒绝了PWA安装提示');
+                }
+                
+                installBtn.classList.add('hidden');
+                deferredPrompt = null;
+            } catch (error) {
+                console.error('安装过程中出错:', error);
+                updateStatus('❌ 安装过程中出错', 'unsupported');
+            }
+        }
+        
+        // 处理PWA安装提示
+        function handleBeforeInstallPrompt(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 更新状态
+            updateStatus('✨ 可以安装此应用', 'supported');
+            
+            // 显示安装按钮
+            installBtn.classList.remove('hidden');
+            
+            console.log('beforeinstallprompt 事件已触发');
+        }
+        
+        // 处理PWA已安装事件
+        function handleAppInstalled() {
+            updateStatus('🎉 应用已成功安装', 'supported');
+            installBtn.classList.add('hidden');
+            console.log('PWA已安装到设备');
+        }
+        
+        // 检查PWA支持情况
+        function checkPWASupport() {
+            const supportStatus = {
+                manifest: !!document.querySelector('link[rel="manifest"]'),
+                serviceWorker: 'serviceWorker' in navigator,
+                isSecure: window.location.protocol === 'https:' || 
+                         window.location.hostname === 'localhost',
+                displayMode: window.matchMedia('(display-mode: standalone)').matches,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            };
+            
+            techDetails.textContent = JSON.stringify(supportStatus, null, 2);
+            
+            // 初始状态
+            if (supportStatus.isSecure && supportStatus.manifest) {
+                updateStatus('🔍 正在检测PWA支持...', 'supported');
+            } else {
+                updateStatus('⚠️ 基本PWA要求未满足', 'unsupported');
+            }
+        }
+        
+        // 注册Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker 注册失败:', error);
+                    });
+            }
+        }
+        
+        // 更新状态显示
+        function updateStatus(message, className) {
+            statusBox.textContent = message;
+            statusBox.className = `status ${className}`;
+            statusBox.classList.remove('hidden');
+        }
+        
+        // 切换详情显示
+        function toggleDetailsVisibility() {
+            isDetailsVisible = !isDetailsVisible;
+            details.style.display = isDetailsVisible ? 'block' : 'none';
+            toggleBtn.textContent = isDetailsVisible ? '隐藏技术详情' : '显示技术详情';
+        }
+        
+        // 页面加载后初始化
+        window.addEventListener('load', init);
+    </script>
 </body>
 </html>
