@@ -3,66 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>轻量PWA</title>
+    <title>智能PWA检测</title>
     <meta name="theme-color" content="#4A90E2">
     <link rel="manifest" href="./manifest.json">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, sans-serif;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             color: #333;
             line-height: 1.6;
+            text-align: center;
         }
-        h1 {
-            color: #4A90E2;
-            font-weight: 500;
-        }
-        #installBtn {
+        .btn {
             background: #4A90E2;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 4px;
             font-size: 16px;
-            margin-top: 20px;
+            margin: 20px 0;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            display: inline-block;
         }
-        #installBtn:hover {
-            background: #3a7bc8;
+        .btn:hover { background: #3a7bc8; }
+        .btn.hidden { display: none; }
+        .status {
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
         }
-        .container {
-            text-align: center;
-            margin-top: 50px;
-        }
+        .supported { background: #e8f5e9; color: #2e7d32; }
+        .unsupported { background: #ffebee; color: #c62828; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>极简 PWA 示例</h1>
-        <p>轻量级渐进式网页应用，点击下方按钮安装</p>
-        <button id="installBtn">安装应用</button>
+        <h1>PWA支持检测</h1>
+        
+        <div id="statusBox" class="status hidden">
+            <!-- 状态信息将在这里显示 -->
+        </div>
+        
+        <button id="installBtn" class="btn hidden">安装应用</button>
+        
+        <div id="details" class="hidden">
+            <h3>技术详情</h3>
+            <pre id="techDetails"></pre>
+        </div>
+        <button id="toggleDetails" class="btn">显示技术详情</button>
     </div>
 
     <script>
-        let deferredPrompt;
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'inline-block';
-        });
-
-        document.getElementById('installBtn').addEventListener('click', () => {
-            if(deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    deferredPrompt = null;
+        // 检测PWA支持情况
+        function checkPWASupport() {
+            const statusBox = document.getElementById('statusBox');
+            const installBtn = document.getElementById('installBtn');
+            const details = document.getElementById('details');
+            const techDetails = document.getElementById('techDetails');
+            
+            let supportStatus = {
+                manifest: !!document.querySelector('link[rel="manifest"]'),
+                serviceWorker: 'serviceWorker' in navigator,
+                beforeInstallPrompt: false,
+                isSecure: window.location.protocol === 'https:' || 
+                         window.location.hostname === 'localhost',
+                displayMode: window.matchMedia('(display-mode: standalone)').matches
+            };
+            
+            // 监听安装提示
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                supportStatus.beforeInstallPrompt = true;
+                updateStatus();
+                
+                // 设置安装按钮
+                installBtn.classList.remove('hidden');
+                installBtn.addEventListener('click', () => {
+                    e.prompt();
+                    e.userChoice.then(() => {
+                        installBtn.classList.add('hidden');
+                    });
                 });
+            });
+            
+            // 更新状态显示
+            function updateStatus() {
+                const isSupported = supportStatus.manifest && 
+                                  supportStatus.isSecure && 
+                                  supportStatus.beforeInstallPrompt;
+                
+                statusBox.textContent = isSupported ? 
+                    '✅ 您的浏览器完全支持PWA安装' : 
+                    '⚠️ 您的浏览器支持有限';
+                
+                statusBox.className = `status ${isSupported ? 'supported' : 'unsupported'}`;
+                statusBox.classList.remove('hidden');
+                
+                // 技术详情
+                techDetails.textContent = JSON.stringify(supportStatus, null, 2);
             }
-        });
+            
+            // 初始检测
+            updateStatus();
+            
+            // 显示/隐藏详情
+            document.getElementById('toggleDetails').addEventListener('click', () => {
+                details.classList.toggle('hidden');
+            });
+        }
+        
+        // 页面加载后运行检测
+        window.addEventListener('load', checkPWASupport);
     </script>
 </body>
 </html>
