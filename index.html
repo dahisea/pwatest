@@ -3,88 +3,597 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PWA 支持检测</title>
-  <meta name="theme-color" content="#ffffff" />
+  <title>小三月WebApp猫猫测试</title>
+  <meta name="theme-color" content="#2563eb" />
   <link rel="manifest" href="./manifest.json" />
   <style>
+    :root {
+      --primary: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-700: #374151;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
     body {
-      font-family: -apple-system, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      color: var(--gray-700);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
       max-width: 600px;
       margin: 0 auto;
-      padding: 20px;
-      color: #333;
-      text-align: center;
     }
+    
+    .status-section {
+      padding: 2rem;
+    }
+    
+    .status-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--info);
+    }
+    
+    .status-card.supported {
+      border-left-color: var(--success);
+    }
+    
+    .status-card.partial {
+      border-left-color: var(--warning);
+    }
+    
+    .status-card.unsupported {
+      border-left-color: var(--danger);
+    }
+    
+    .status-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    
+    .icon-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .icon-warning {
+      background: var(--warning);
+      color: white;
+    }
+    
+    .icon-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .status-message {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    .feature-card {
+      padding: 1rem;
+      border-radius: 8px;
+      background: var(--gray-100);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .feature-name {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .feature-status {
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      align-self: flex-start;
+      margin-top: auto;
+    }
+    
+    .supported-status {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .unsupported-status {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    
     .btn {
-      background: #4A90E2;
-      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 4px;
-      font-size: 16px;
-      margin: 20px 0;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      margin-top: 0.5rem;
     }
-    .btn:hover { background: #3a7bc8; }
-    .status {
-      padding: 15px;
-      border-radius: 4px;
-      margin: 20px 0;
-      font-weight: bold;
+    
+    .btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
-    .supported { background: #e8f5e9; color: #2e7d32; }
-    .unsupported { background: #ffebee; color: #c62828; }
-    #details {
-      display: none;
-      margin: 20px 0;
-      padding: 15px;
-      background: #f5f5f5;
-      border-radius: 4px;
-      text-align: left;
+    
+    .btn:active {
+      transform: translateY(0);
     }
-    pre {
+    
+    .btn-success {
+      background: var(--success);
+    }
+    
+    .btn-success:hover {
+      background: #059669;
+    }
+    
+    .btn-warning {
+      background: var(--warning);
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background: #dbeafe;
+    }
+    
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .details-section {
+      padding: 0 2rem 2rem;
+    }
+    
+    .details-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    .details-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    #techDetails {
+      background: var(--gray-100);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.875rem;
       white-space: pre-wrap;
       word-break: break-word;
-      background: #fff;
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
+      max-height: 300px;
+      overflow: auto;
+    }
+    
+    .ios-install-guide {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin-top: 1.5rem;
+      display: none;
+    }
+    
+    .guide-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #b45309;
+    }
+    
+    .guide-steps {
+      padding-left: 1.5rem;
+    }
+    
+    .guide-steps li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    
+    @media (max-width: 600px) {
+      header {
+        padding: 1.5rem 1rem;
+      }
+      
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      .status-section, .details-section {
+        padding: 1.5rem 1rem;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>PWA 支持检测</h1>
-
-  <div id="statusBox" class="status"></div>
-  <button id="installBtn" class="btn" hidden>安装应用</button>
-
-  <div id="details">
-    <h3>技术详情</h3>
-    <pre id="techDetails">检测中...</pre>
+  <div class="container">
+    <header>
+      <h1>PWA 支持深度检测工具</h1>
+      <p class="subtitle">全面检测您的浏览器对渐进式网络应用的支持情况，提供详细安装指引</p>
+    </header>
+    
+    <main>
+      <section class="status-section">
+        <div id="statusCard" class="status-card">
+          <div class="status-title">
+            <div id="statusIcon" class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+              </svg>
+            </div>
+            <span id="statusText">正在检测 PWA 支持情况...</span>
+          </div>
+          
+          <p id="statusMessage" class="status-message">请稍候，我们正在分析您的浏览器环境...</p>
+          
+          <div class="btn-group">
+            <button id="installBtn" class="btn" hidden>安装此应用</button>
+            <button id="refreshBtn" class="btn btn-outline">重新检测</button>
+          </div>
+          
+          <div id="iosInstallGuide" class="ios-install-guide">
+            <div class="guide-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+              </svg>
+              <span>iOS 设备安装指南</span>
+            </div>
+            <ol class="guide-steps">
+              <li>点击 Safari 浏览器底部的分享按钮 <strong>(<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display:inline; margin:0 2px"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/></svg>)</strong></li>
+              <li>滑动找到并选择 <strong>"添加到主屏幕"</strong></li>
+              <li>点击右上角的 <strong>"添加"</strong> 按钮</li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="feature-grid" id="featureGrid">
+          <!-- 功能状态将通过JS动态填充 -->
+        </div>
+      </section>
+      
+      <section class="details-section">
+        <div class="details-header">
+          <h2 class="details-title">技术详情</h2>
+          <button id="toggleDetails" class="btn btn-outline">显示详情</button>
+        </div>
+        <pre id="techDetails">检测中，请稍候...</pre>
+      </section>
+    </main>
+    
+    <footer class="footer">
+      <p>PWA 支持检测工具 &copy; 2023 | 确保使用 HTTPS 连接以获得最佳支持</p>
+    </footer>
   </div>
-  <button id="toggleDetails" class="btn">显示技术详情</button>
 
   <script>
     let deferredPrompt = null;
     const installBtn = document.getElementById('installBtn');
-    const statusBox = document.getElementById('statusBox');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const statusCard = document.getElementById('statusCard');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
+    const statusMessage = document.getElementById('statusMessage');
     const techDetails = document.getElementById('techDetails');
     const toggleBtn = document.getElementById('toggleDetails');
-    const detailsBox = document.getElementById('details');
+    const featureGrid = document.getElementById('featureGrid');
+    const iosInstallGuide = document.getElementById('iosInstallGuide');
 
-    const isStandalone = () => (
-      window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true // for iOS Safari
-    );
+    // 检测是否iOS设备
+    function isIos() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
 
+    // 检测是否Safari浏览器
+    function isSafari() {
+      return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    }
+
+    // 检测是否独立应用模式
+    function isStandalone() {
+      return window.matchMedia('(display-mode: standalone)').matches || 
+             window.navigator.standalone === true;
+    }
+
+    // 注册Service Worker并返回实际状态
+    async function registerServiceWorker() {
+      if (!('serviceWorker' in navigator)) {
+        return { registered: false, error: '浏览器不支持 Service Worker' };
+      }
+      
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('✅ Service Worker 注册成功:', registration);
+        return { registered: true };
+      } catch (error) {
+        console.warn('❌ Service Worker 注册失败:', error);
+        return { registered: false, error: error.message };
+      }
+    }
+
+    // 创建功能卡片
+    function createFeatureCard(name, status, details = '') {
+      const card = document.createElement('div');
+      card.className = 'feature-card';
+      
+      const nameElement = document.createElement('div');
+      nameElement.className = 'feature-name';
+      nameElement.innerHTML = name;
+      
+      const statusElement = document.createElement('div');
+      statusElement.className = `feature-status ${status ? 'supported-status' : 'unsupported-status'}`;
+      statusElement.textContent = status ? '支持' : '不支持';
+      
+      card.appendChild(nameElement);
+      
+      if (details) {
+        const detailsElement = document.createElement('div');
+        detailsElement.className = 'feature-details';
+        detailsElement.textContent = details;
+        detailsElement.style.fontSize = '0.875rem';
+        detailsElement.style.marginTop = '0.5rem';
+        detailsElement.style.color = '#6b7280';
+        card.appendChild(detailsElement);
+      }
+      
+      card.appendChild(statusElement);
+      return card;
+    }
+
+    // 更新UI状态
+    async function updateStatus() {
+      // 重置状态
+      statusCard.className = 'status-card';
+      statusIcon.className = 'icon';
+      statusText.textContent = '正在检测 PWA 支持情况...';
+      statusMessage.textContent = '请稍候，我们正在分析您的浏览器环境...';
+      featureGrid.innerHTML = '';
+      installBtn.hidden = true;
+      iosInstallGuide.style.display = 'none';
+      
+      // 检测核心功能
+      const swStatus = await registerServiceWorker();
+      const manifestSupported = !!document.querySelector('link[rel="manifest"]');
+      const beforeInstallPrompt = 'onbeforeinstallprompt' in window;
+      const secureContext = window.isSecureContext;
+      const standalone = isStandalone();
+      const ios = isIos();
+      const safari = isSafari();
+      
+      // 创建支持详情对象
+      const support = {
+        manifest: manifestSupported,
+        serviceWorker: 'serviceWorker' in navigator,
+        serviceWorkerRegistered: swStatus.registered,
+        serviceWorkerError: swStatus.error || '',
+        beforeInstallPrompt,
+        isSecureContext: secureContext,
+        standalone,
+        userAgent: navigator.userAgent,
+        ios,
+        safari,
+        canInstall: false
+      };
+      
+      // 检测是否可以安装
+      let canInstall = false;
+      let installMethod = '';
+      
+      // 如果已安装
+      if (standalone) {
+        statusCard.classList.add('supported');
+        statusIcon.classList.add('icon-success');
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/></svg>';
+        statusText.textContent = '已安装为独立应用';
+        statusMessage.textContent = '此应用已成功安装到您的设备上，享受原生应用般的体验！';
+        support.canInstall = false;
+      } 
+      // 如果支持安装提示
+      else if (deferredPrompt) {
+        statusCard.classList.add('supported');
+        statusIcon.classList.add('icon-success');
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>';
+        statusText.textContent = '支持安装';
+        statusMessage.textContent = '您的浏览器支持将此网站安装为独立应用。';
+        installBtn.hidden = false;
+        canInstall = true;
+        installMethod = 'prompt';
+        support.canInstall = true;
+      } 
+      // iOS Safari设备
+      else if (ios && safari) {
+        statusCard.classList.add('partial');
+        statusIcon.classList.add('icon-warning');
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>';
+        statusText.textContent = '支持手动安装';
+        statusMessage.textContent = '在iOS设备上，您可以通过Safari浏览器手动添加到主屏幕。';
+        iosInstallGuide.style.display = 'block';
+        canInstall = true;
+        installMethod = 'manual';
+        support.canInstall = true;
+      } 
+      // 核心功能支持但无安装提示
+      else if (swStatus.registered && manifestSupported && secureContext) {
+        statusCard.classList.add('partial');
+        statusIcon.classList.add('icon-warning');
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>';
+        statusText.textContent = '部分支持';
+        statusMessage.textContent = '您的浏览器支持PWA核心功能，但可能无法直接安装。请尝试手动添加到主屏幕。';
+        canInstall = false;
+        installMethod = 'unknown';
+        support.canInstall = false;
+      } 
+      // 完全不支持
+      else {
+        statusCard.classList.add('unsupported');
+        statusIcon.classList.add('icon-danger');
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>';
+        statusText.textContent = '不支持';
+        statusMessage.textContent = '您的浏览器或环境不支持PWA功能。';
+        canInstall = false;
+        installMethod = 'none';
+        support.canInstall = false;
+      }
+      
+      // 添加功能卡片
+      featureGrid.appendChild(createFeatureCard(
+        'Service Worker 注册', 
+        swStatus.registered, 
+        swStatus.error ? `错误: ${swStatus.error}` : ''
+      ));
+      
+      featureGrid.appendChild(createFeatureCard(
+        'Web App Manifest', 
+        manifestSupported
+      ));
+      
+      featureGrid.appendChild(createFeatureCard(
+        '安装提示支持', 
+        beforeInstallPrompt
+      ));
+      
+      featureGrid.appendChild(createFeatureCard(
+        '安全上下文 (HTTPS)', 
+        secureContext
+      ));
+      
+      featureGrid.appendChild(createFeatureCard(
+        '独立应用模式', 
+        standalone
+      ));
+      
+      featureGrid.appendChild(createFeatureCard(
+        '添加到主屏幕', 
+        canInstall, 
+        canInstall ? `方法: ${installMethod}` : ''
+      ));
+      
+      // 更新技术详情
+      techDetails.textContent = JSON.stringify(support, null, 2);
+    }
+
+    // 捕获安装提示事件
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.hidden = false;
       console.log('✅ 捕获 beforeinstallprompt 事件');
+      updateStatus(); // 更新状态以显示安装按钮
     });
 
+    // 安装按钮点击事件
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
@@ -92,48 +601,32 @@
         console.log(result.outcome === 'accepted' ? '✅ 用户接受安装' : '❌ 用户取消安装');
         installBtn.hidden = true;
         deferredPrompt = null;
+        
+        // 更新状态
+        setTimeout(updateStatus, 1000);
       }
     });
 
-    // 注册 Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('✅ Service Worker 注册成功'))
-        .catch(err => console.warn('❌ Service Worker 注册失败:', err));
-    }
-
-    // 页面加载后检查支持情况
-    window.addEventListener('load', () => {
-      const support = {
-        manifest: !!document.querySelector('link[rel="manifest"]'),
-        serviceWorker: 'serviceWorker' in navigator,
-        beforeInstallPrompt: 'onbeforeinstallprompt' in window,
-        isSecureContext: window.isSecureContext,
-        standalone: isStandalone(),
-        userAgent: navigator.userAgent
-      };
-
-      techDetails.textContent = JSON.stringify(support, null, 2);
-
-      const allSupported = support.manifest && support.serviceWorker && support.isSecureContext;
-
-      statusBox.className = 'status ' + (allSupported ? 'supported' : 'unsupported');
-      statusBox.textContent = allSupported
-        ? (support.standalone ? '✅ 已安装为独立应用' : '✅ 支持 PWA，可安装')
-        : '❌ 当前环境不支持完整的 PWA 功能';
-
-      // 自动隐藏安装按钮（已安装或不支持）
-      if (support.standalone || !support.beforeInstallPrompt) {
-        installBtn.hidden = true;
-      }
-    });
+    // 重新检测按钮
+    refreshBtn.addEventListener('click', updateStatus);
 
     // 显示/隐藏技术详情
-    let visible = false;
+    let detailsVisible = false;
     toggleBtn.addEventListener('click', () => {
-      visible = !visible;
-      detailsBox.style.display = visible ? 'block' : 'none';
-      toggleBtn.textContent = visible ? '隐藏技术详情' : '显示技术详情';
+      detailsVisible = !detailsVisible;
+      techDetails.style.display = detailsVisible ? 'block' : 'none';
+      toggleBtn.textContent = detailsVisible ? '隐藏详情' : '显示详情';
+    });
+
+    // 初始化
+    window.addEventListener('load', () => {
+      updateStatus();
+      
+      // 注册Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .catch(err => console.warn('❌ Service Worker 注册失败:', err));
+      }
     });
   </script>
 </body>
