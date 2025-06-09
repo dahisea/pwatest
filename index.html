@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>小三月WebApp猫猫测试</title>
-  <meta name="theme-color" content="#2563eb" />
-  <link rel="manifest" href="./manifest.json" />
-  <style>
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>小三月的秘密基地社区WebApp猫猫测试</title><meta name="theme-color" content="#2563eb"><link rel="manifest" href="./manifest.json"><style>
     :root {
       --primary: #2563eb;
       --success: #10b981;
@@ -317,69 +309,7 @@
         flex-direction: column;
       }
     }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>PWA 支持深度检测工具</h1>
-      <p class="subtitle">全面检测您的浏览器对渐进式网络应用的支持情况，提供详细安装指引</p>
-    </header>
-    
-    <main>
-      <section class="status-section">
-        <div id="statusCard" class="status-card">
-          <div class="status-title">
-            <div id="statusIcon" class="icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-              </svg>
-            </div>
-            <span id="statusText">正在检测 PWA 支持情况...</span>
-          </div>
-          
-          <p id="statusMessage" class="status-message">请稍候，我们正在分析您的浏览器环境...</p>
-          
-          <div class="btn-group">
-            <button id="installBtn" class="btn" hidden>安装此应用</button>
-            <button id="refreshBtn" class="btn btn-outline">重新检测</button>
-          </div>
-          
-          <div id="iosInstallGuide" class="ios-install-guide">
-            <div class="guide-title">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-              </svg>
-              <span>iOS 设备安装指南</span>
-            </div>
-            <ol class="guide-steps">
-              <li>点击 Safari 浏览器底部的分享按钮 <strong>(<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display:inline; margin:0 2px"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/></svg>)</strong></li>
-              <li>滑动找到并选择 <strong>"添加到主屏幕"</strong></li>
-              <li>点击右上角的 <strong>"添加"</strong> 按钮</li>
-            </ol>
-          </div>
-        </div>
-        
-        <div class="feature-grid" id="featureGrid">
-          <!-- 功能状态将通过JS动态填充 -->
-        </div>
-      </section>
-      
-      <section class="details-section">
-        <div class="details-header">
-          <h2 class="details-title">技术详情</h2>
-          <button id="toggleDetails" class="btn btn-outline">显示详情</button>
-        </div>
-        <pre id="techDetails">检测中，请稍候...</pre>
-      </section>
-    </main>
-    
-    <footer class="footer">
-      <p>PWA 支持检测工具 &copy; 2023 | 确保使用 HTTPS 连接以获得最佳支持</p>
-    </footer>
-  </div>
-
-  <script>
+  </style></head><body><div class="container"><header><h1>基于浏览器跳转的WebApp标签</h1><p class="subtitle">检测您的浏览器对渐进式网络应用的支持情况，提供详细安装指引</p></header><main><section class="status-section"><div id="statusCard" class="status-card"><div class="status-title"><div id="statusIcon" class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewbox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" /></svg></div><span id="statusText">正在检测 PWA 支持情况...</span></div><p id="statusMessage" class="status-message">请稍候，正在分析浏览器环境...</p><div class="btn-group"><button id="installBtn" class="btn" hidden>安装此应用</button><button id="refreshBtn" class="btn btn-outline">重新检测</button></div><div id="iosInstallGuide" class="ios-install-guide"><div class="guide-title"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewbox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" /></svg><span>iOS 设备安装指南</span></div><ol class="guide-steps"><li>点击 Safari 浏览器底部的分享按钮<strong>(<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewbox="0 0 16 16" style="display:inline; margin:0 2px"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z" /><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z" /></svg>)</strong></li><li>滑动找到并选择<strong>"添加到主屏幕"</strong></li><li>点击右上角的<strong>"添加"</strong>按钮</li></ol></div></div><div class="feature-grid" id="featureGrid"><!-- 功能状态将通过JS动态填充 --></div></section><section class="details-section"><div class="details-header"><h2 class="details-title">技术详情</h2><button id="toggleDetails" class="btn btn-outline">显示详情</button></div><pre id="techDetails">检测中，请稍候...</pre></section></main><footer class="footer"><p>賽法利婭 © 2025 | 请确保使用 HTTPS 连接</p></footer></div><script>
     let deferredPrompt = null;
     const installBtn = document.getElementById('installBtn');
     const refreshBtn = document.getElementById('refreshBtn');
@@ -394,7 +324,7 @@
 
     // 检测是否iOS设备
     function isIos() {
-      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      return /iPad|iPhone|Macintosh|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
 
     // 检测是否Safari浏览器
@@ -628,6 +558,4 @@
           .catch(err => console.warn('❌ Service Worker 注册失败:', err));
       }
     });
-  </script>
-</body>
-</html>
+  </script></body></html>
